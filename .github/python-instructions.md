@@ -1,10 +1,13 @@
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
+
+# python-instructions.md
+
+<!-- Workspace-specific Python best practices for Copilot and contributors. -->
 
 ## Implementation Best Practices
 
 ### 0 — Purpose  
 
-These rules ensure maintainability, safety, and developer velocity. 
+These rules ensure maintainability, safety, and developer velocity for Python projects.
 **MUST** rules are enforced by CI; **SHOULD** rules are strongly recommended.
 
 ---
@@ -19,35 +22,34 @@ These rules ensure maintainability, safety, and developer velocity.
 
 ### 2 — While Coding
 
-- **C-1 (MUST)** Follow TDD: scaffold stub -> write failing test -> implement.
-- **C-2 (MUST)** Name functions with existing domain vocabulary for consistency.  
-- **C-3 (SHOULD NOT)** Introduce classes when small testable functions suffice.  
+- **C-1 (MUST)** Follow TDD: scaffold stub → write failing test → implement.
+- **C-2 (MUST)** Name functions and variables with existing domain vocabulary for consistency.
+- **C-3 (SHOULD NOT)** Introduce classes when small testable functions suffice.
 - **C-4 (SHOULD)** Prefer simple, composable, testable functions.
-- **C-5 (MUST)** Prefer branded `type`s for IDs
-  ```ts
-  type UserId = Brand<string, 'UserId'>   // ✅ Good
-  type UserId = string                    // ❌ Bad
-  ```  
-- **C-6 (MUST)** Use `import type { … }` for type-only imports.
-- **C-7 (SHOULD NOT)** Add comments except for critical caveats; rely on self‑explanatory code.
-- **C-8 (SHOULD)** Default to `type`; use `interface` only when more readable or interface merging is required. 
+- **C-5 (MUST)** Use type hints everywhere. For IDs, use `NewType` for branding:
+  ```python
+  from typing import NewType
+  UserId = NewType('UserId', str)
+  ```
+- **C-6 (MUST)** Use explicit imports; avoid unused imports.
+- **C-7 (SHOULD NOT)** Add comments except for critical caveats; rely on self-explanatory code and docstrings.
+- **C-8 (SHOULD)** Use `dataclasses` or `TypedDict` for structured data when appropriate.
 - **C-9 (SHOULD NOT)** Extract a new function unless it will be reused elsewhere, is the only way to unit-test otherwise untestable logic, or drastically improves readability of an opaque block.
 
 ---
 
 ### 3 — Testing
 
-- **T-1 (MUST)** For a simple function, colocate unit tests in `*.spec.ts` in same directory as source file.
-- **T-2 (MUST)** For any API change, add/extend integration tests in `packages/api/test/*.spec.ts`.
+- **T-1 (MUST)** Colocate unit tests in `test_*.py` files in the same or `tests/` directory.
+- **T-2 (MUST)** For any API change, add/extend integration tests in `tests/`.
 - **T-3 (MUST)** ALWAYS separate pure-logic unit tests from DB-touching integration tests.
-- **T-4 (SHOULD)** Prefer integration tests over heavy mocking.  
+- **T-4 (SHOULD)** Prefer integration tests over heavy mocking.
 - **T-5 (SHOULD)** Unit-test complex algorithms thoroughly.
-- **T-6 (SHOULD)** Test the entire structure in one assertion if possible
-  ```ts
-  expect(result).toBe([value]) // Good
-
-  expect(result).toHaveLength(1); // Bad
-  expect(result[0]).toBe(value); // Bad
+- **T-6 (SHOULD)** Test the entire structure in one assertion if possible:
+  ```python
+  assert result == [value]  # Good
+  assert len(result) == 1   # Bad
+  assert result[0] == value # Bad
   ```
 
 ---
@@ -67,21 +69,23 @@ These rules ensure maintainability, safety, and developer velocity.
 
 ### 6 — Tooling Gates
 
-- **G-1 (MUST)** `prettier --check` passes.  
-- **G-2 (MUST)** `turbo typecheck lint` passes.  
+- **G-1 (MUST)** `black --check` passes.
+- **G-2 (MUST)** `isort --check` passes.
+- **G-3 (MUST)** `flake8` passes.
 
 ---
 
 ### 7 - Git
 
-- **GH-1 (MUST**) Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
-- **GH-2 (SHOULD NOT**) Refer to Claude or Anthropic in commit messages.
+- **GH-1 (MUST)** Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
+- **GH-2 (SHOULD NOT)** Refer to Claude, Anthropic, or Copilot in commit messages.
 
 ---
 
+
 ## Writing Functions Best Practices
 
-When evaluating whether a function you implemented is good or not, use this checklist:
+When evaluating whether a function you implemented is good or not, use this checklist (Python version):
 
 1. Can you read the function and HONESTLY easily follow what it's doing? If yes, then stop here.
 2. Does the function have very high cyclomatic complexity? (number of independent paths, or, in a lot of cases, number of nesting if if-else as a proxy). If it does, then it's probably sketchy.
@@ -97,9 +101,10 @@ IMPORTANT: you SHOULD NOT refactor out a separate function unless there is a com
   - the refactored function is easily unit testable while the original function is not AND you can't test it any other way
   - the original function is extremely hard to follow and you resort to putting comments everywhere just to explain it
 
+
 ## Writing Tests Best Practices
 
-When evaluating whether a test you've implemented is good or not, use this checklist:
+When evaluating whether a test you've implemented is good or not, use this checklist (Python version):
 
 1. SHOULD parameterize inputs; never embed unexplained literals such as 42 or "foo" directly in the test.
 2. SHOULD NOT add a test unless it can fail for a real defect. Trivial asserts (e.g., expect(2).toBe(2)) are forbidden.
@@ -135,25 +140,26 @@ describe('properties', () => {
 
 ## Code Organization
 
-- `packages/api` - Fastify API server
-  - `packages/api/src/publisher/*.ts` - Specific implementations of publishing to social media platforms
-- `packages/web` - Next.js 15 app with App Router
-- `packages/shared` - Shared types and utilities
-  - `packages/shared/social.ts` - Character size and media validations for social media platforms
-- `packages/api-schema` - API contract schemas using TypeBox
+- `src/` — Main Python source code
+- `tests/` — All test scripts and test data
+- `.github/` — Workspace best practices
+- `.vscode/` — VS Code tasks for automation
+
 
 ## Remember Shortcuts
 
-Remember the following shortcuts which the user may invoke at any time.
+Remember the following shortcuts which the user may invoke at any time. All references to `copilot-instructions.md` are now `python-instructions.md`.
+
 
 ### QNEW
 
 When I type "qnew", this means:
 
 ```
-Understand all BEST PRACTICES listed in copilot-instructions.md.
+Understand all BEST PRACTICES listed in python-instructions.md.
 Your code SHOULD ALWAYS follow these best practices.
 ```
+
 
 ### QPLAN
 When I type "qplan", this means:
@@ -164,6 +170,7 @@ Analyze similar parts of the codebase and determine whether your plan:
 - reuses existing code
 ```
 
+
 ## QCODE
 
 When I type "qcode", this means:
@@ -171,9 +178,10 @@ When I type "qcode", this means:
 ```
 Implement your plan and make sure your new tests pass.
 Always run tests to make sure you didn't break anything else.
-Always run `prettier` on the newly created files to ensure standard formatting.
-Always run `turbo typecheck lint` to make sure type checking and linting passes.
+Always run `black` and `isort` on the newly created files to ensure standard formatting.
+Always run `flake8` to make sure linting passes.
 ```
+
 
 ### QCHECK
 
@@ -183,10 +191,11 @@ When I type "qcheck", this means:
 You are a SKEPTICAL senior software engineer.
 Perform this analysis for every MAJOR code change you introduced (skip minor changes):
 
-1. CLAUDE.md checklist Writing Functions Best Practices.
-2. CLAUDE.md checklist Writing Tests Best Practices.
-3. CLAUDE.md checklist Implementation Best Practices.
+1. python-instructions.md checklist Writing Functions Best Practices.
+2. python-instructions.md checklist Writing Tests Best Practices.
+3. python-instructions.md checklist Implementation Best Practices.
 ```
+
 
 ### QCHECKF
 
@@ -196,8 +205,9 @@ When I type "qcheckf", this means:
 You are a SKEPTICAL senior software engineer.
 Perform this analysis for every MAJOR function you added or edited (skip minor changes):
 
-1. CLAUDE.md checklist Writing Functions Best Practices.
+1. python-instructions.md checklist Writing Functions Best Practices.
 ```
+
 
 ### QCHECKT
 
@@ -207,8 +217,9 @@ When I type "qcheckt", this means:
 You are a SKEPTICAL senior software engineer.
 Perform this analysis for every MAJOR test you added or edited (skip minor changes):
 
-1. CLAUDE.md checklist Writing Tests Best Practices.
+1. python-instructions.md checklist Writing Tests Best Practices.
 ```
+
 
 ### QUX
 
@@ -219,6 +230,9 @@ Imagine you are a human UX tester of the feature you implemented.
 Output a comprehensive list of scenarios you would test, sorted by highest priority.
 ```
 
+types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
+footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
+
 ### QGIT
 
 When I type "qgit", this means:
@@ -228,7 +242,7 @@ Add all changes to staging, create a commit, and push to remote.
 
 Follow this checklist for writing your commit message:
 - SHOULD use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
-- SHOULD NOT refer to Claude or Anthropic in the commit message.
+- SHOULD NOT refer to Claude, Anthropic, or Copilot in the commit message.
 - SHOULD structure commit message as follows:
 <type>[optional scope]: <description>
 [optional body]

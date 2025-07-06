@@ -9,7 +9,7 @@ Batch export JSON annotation files to CSV, with robust testing, formatting, and 
 - Batch convert JSON annotation files to CSV using `ExportToCSV`.
 - All code and tests are colocated, composable, and easy to maintain.
 - Automated testing, linting, and formatting workflows.
-- Strict workspace best practices enforced (see `.github/copilot-instructions.md`).
+- Strict workspace best practices enforced (see `.github/python-instructions.md`).
 
 ---
 
@@ -70,7 +70,7 @@ flake8 src/ tests/
 
 ## Best Practices
 
-All contributors MUST follow the rules in `.github/copilot-instructions.md` (coding, testing, commit messages, etc). See that file for details and shortcuts.
+All contributors MUST follow the rules in `.github/python-instructions.md` (coding, testing, commit messages, etc). See that file for details and shortcuts.
 
 ---
 
