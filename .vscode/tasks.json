@@ -10,6 +10,13 @@
                 "isDefault": true
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Test: Run all Python tests",
+            "type": "shell",
+            "command": "pytest",
+            "group": "test",
+            "problemMatcher": []
         }
     ]
 }

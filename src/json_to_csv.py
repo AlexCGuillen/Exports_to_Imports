@@ -72,7 +72,9 @@ class ExportToCSV:
     def to_file(self, file, minify=True, flat_regions=True, **kwargs):
         return self.to_dataframe(minify, flat_regions).to_csv(file, **kwargs)
 
+
 def convert_all_json_in_folder(folder_path):
+    """Batch convert all JSON files in a folder to CSV using ExportToCSV."""
     found = False
     if not os.path.isdir(folder_path):
         print(f"Error: The folder '{folder_path}' does not exist.")
